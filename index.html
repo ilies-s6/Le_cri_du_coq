@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le Cri du Coq — Le secret de l'agneau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-left">
+      <div id="hud-zone" class="hud-pill">🏡 La Ferme des Plumes</div>
+      <div id="hud-objective" class="hud-objective"></div>
+    </div>
+    <div class="hud-right">
+      <div id="hud-clue-box" class="hud-pill clue-count">🔍 <span id="hud-clues">0</span></div>
+      <button id="btn-notebook" class="hud-btn" title="Carnet d'enquête (C)">📖 Carnet <kbd>C</kbd></button>
+      <button id="btn-mute" class="hud-btn small" title="Son (M)">🔊</button>
+    </div>
+  </div>
+  <div id="zone-banner"></div>
+  <div id="banner-activity"></div>
+  <div id="hint" class="hidden"></div>
+  <div id="toasts"></div>
+
+  <!-- Boîte de dialogue -->
+  <div id="dialogue" class="hidden">
+    <canvas id="dlg-portrait" width="112" height="112"></canvas>
+    <div class="dlg-main">
+      <div id="dlg-name"></div>
+      <div id="dlg-text"></div>
+      <div id="dlg-choices"></div>
+      <div id="dlg-next">▼ <kbd>E</kbd></div>
+    </div>
+  </div>
+
+  <div id="fade"></div>
+
+  <!-- Écran titre -->
+  <div id="title" class="overlay title-screen">
+    <div class="title-card">
+      <canvas id="title-coq" width="240" height="220"></canvas>
+      <div class="title-kicker">Un jeu d'enquête à la Ferme des Plumes</div>
+      <h1>LE CRI DU COQ</h1>
+      <div class="episodes">
+        <div class="episode active">
+          <div class="ep-num">Épisode 1</div>
+          <div class="ep-name">Le secret de l'agneau</div>
+          <button id="btn-play" class="btn btn-solve big">▶ Jouer</button>
+        </div>
+        <div class="episode locked">
+          <div class="ep-num">Épisode 2</div>
+          <div class="ep-name">Bientôt...</div>
+        </div>
+      </div>
+      <div id="title-best" class="title-best"></div>
+      <div class="title-foot">Clavier : ZQSD / flèches · E pour interagir · C pour le carnet</div>
+    </div>
+  </div>
+
+  <!-- Bilan final -->
+  <div id="end" class="overlay hidden"><div id="end-card" class="panel end-card"></div></div>
+
+  <!-- Activité -->
+  <div id="event" class="overlay hidden"><div id="event-card" class="panel event-card"></div></div>
+
+  <!-- Révélation -->
+  <div id="reveal" class="overlay hidden dark"><div id="reveal-card" class="reveal-card"></div></div>
+
+  <!-- Déduction -->
+  <div id="deduction" class="overlay hidden"><div id="ded-card" class="panel ded-card"></div></div>
+
+  <!-- Carnet d'enquête -->
+  <div id="notebook" class="overlay hidden">
+    <div class="nb-book">
+      <div class="nb-head">
+        <h2>📖 CARNET D'ENQUÊTE</h2>
+        <button id="nb-close" class="icon-btn" title="Fermer (Échap)">✕</button>
+      </div>
+      <div id="nb-objective" class="nb-objective"></div>
+      <div class="nb-tabs">
+        <button class="nb-tab active" data-tab="persos">Personnages</button>
+        <button class="nb-tab" data-tab="indices">Indices</button>
+        <button class="nb-tab" data-tab="hyp">Hypothèses</button>
+      </div>
+      <div id="nb-body" class="nb-body"></div>
+      <div id="nb-foot" class="nb-foot"></div>
+    </div>
+  </div>
+
+  <div id="modal" class="overlay hidden"></div>
+
+  <!-- Moteur -->
+  <script src="js/core.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/dialogue.js"></script>
+  <script src="js/notebook.js"></script>
+  <script src="js/deduction.js"></script>
+  <script src="js/event.js"></script>
+
+  <!-- Épisode 1 : données modifiables -->
+  <script src="episodes/ep1/config.js"></script>
+  <script src="episodes/ep1/map.js"></script>
+  <script src="episodes/ep1/characters.js"></script>
+  <script src="episodes/ep1/clues.js"></script>
+  <script src="episodes/ep1/dialogues.js"></script>
+  <script src="episodes/ep1/objects.js"></script>
+  <script src="episodes/ep1/scenes.js"></script>
+  <script src="episodes/ep1/event.js"></script>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

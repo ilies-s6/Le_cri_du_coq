@@ -368,3 +368,91 @@ body.playing #hud { display: flex; }
   #dlg-portrait { width: 64px; height: 64px; }
   .hud-objective { font-size: .82rem; }
 }
+
+/* ---------- Téléphone / tablette ---------- */
+body { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+textarea, select { -webkit-user-select: text; user-select: text; }
+canvas#game { touch-action: none; }
+.only-touch { display: none; }
+body.touch .only-touch { display: block; }
+body.touch .only-keys { display: none; }
+body.touch .hud-btn kbd { display: none; }
+
+#touch-controls { display: none; }
+body.touch.playing #touch-controls { display: block; }
+body.touch.ui-busy #touch-controls { display: none; }
+#joystick {
+  position: fixed; left: calc(18px + env(safe-area-inset-left)); bottom: calc(18px + env(safe-area-inset-bottom));
+  width: 128px; height: 128px; border-radius: 50%; z-index: 3; touch-action: none;
+  background: radial-gradient(circle, rgba(255,248,236,.35) 0%, rgba(255,248,236,.18) 70%);
+  border: 3px solid rgba(42,29,24,.55); box-shadow: 0 3px 0 rgba(42,29,24,.35);
+}
+.joy-knob {
+  position: absolute; left: 50%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+  background: var(--cream); border: 3px solid var(--ink); box-shadow: 0 3px 0 var(--ink); pointer-events: none;
+}
+.touch-buttons {
+  position: fixed; right: calc(18px + env(safe-area-inset-right)); bottom: calc(22px + env(safe-area-inset-bottom));
+  display: flex; align-items: flex-end; gap: 14px; z-index: 3;
+}
+.touch-btn {
+  width: 84px; height: 84px; border-radius: 50%; border: 4px solid var(--ink); background: #f2c94c; color: var(--ink);
+  font: 700 2rem var(--font); box-shadow: 0 5px 0 var(--ink); touch-action: none;
+}
+.touch-btn.small { width: 60px; height: 60px; font-size: 1.6rem; background: var(--cream); }
+.touch-btn.down { transform: translateY(4px); box-shadow: 0 1px 0 var(--ink); }
+
+/* Écran étroit (portrait) */
+@media (max-width: 600px) {
+  #hud { padding: 8px 10px; }
+  .hud-pill { padding: 4px 10px; font-size: .85rem; }
+  .hud-left { max-width: 58vw; gap: 6px; }
+  .hud-objective { font-size: .75rem; padding: 6px 8px; }
+  .hud-btn { padding: 4px 8px; font-size: .85rem; }
+  #toasts { top: auto; bottom: 160px; right: 10px; left: 10px; align-items: center; }
+  .toast { max-width: 100%; }
+  #hint { top: auto; bottom: 165px; font-size: .85rem; }
+  #dialogue { padding: 10px; gap: 10px; bottom: 10px; width: calc(100vw - 20px); }
+  #dlg-portrait { width: 56px; height: 56px; }
+  #dlg-text { font-size: 1rem; min-height: 2.5em; }
+  .choice { font-size: .92rem; padding: 7px 10px; }
+  .panel, .nb-book { padding: 14px; }
+  .nb-book { padding-left: 24px; }
+  .nb-head h2 { font-size: 1.1rem; }
+  .nb-tab { padding: 6px 10px; font-size: .9rem; }
+  .nb-charbtn { padding: 2px 8px 2px 2px; font-size: .85rem; }
+  .nb-charbtn canvas { width: 34px; height: 34px; }
+  .nb-sheet-head canvas { width: 72px; height: 72px; }
+  .hyp-opt { width: 40px; height: 40px; font-size: 1.25rem; }
+  .ded-opt { width: 92px; font-size: .85rem; }
+  .ded-opt canvas { width: 70px; height: 70px; }
+  .ev-part { width: 88px; font-size: .85rem; }
+  .ev-role-name { width: auto; min-width: 80px; }
+  .end-table { grid-template-columns: 1fr; gap: 2px; }
+  .end-v { margin-bottom: 6px; }
+  .modal-card { padding: 18px; }
+  .modal-body { font-size: .95rem; }
+  .title-card h1 { -webkit-text-stroke: 1px var(--ink); }
+  #title-coq { width: 140px; }
+  .rv-lines p { font-size: 1.05rem; }
+  .rv-lines p.rv-big { font-size: 1.5rem; }
+  #zone-banner { font-size: 1.3rem; }
+}
+/* Téléphone à l'horizontale : peu de hauteur */
+@media (max-height: 500px) {
+  #joystick { width: 110px; height: 110px; }
+  .touch-btn { width: 72px; height: 72px; }
+  .touch-btn.small { width: 52px; height: 52px; }
+  .hud-objective { font-size: .75rem; padding: 5px 8px; }
+  #dialogue { bottom: 6px; padding: 8px 10px; }
+  #dlg-portrait { width: 56px; height: 56px; }
+  #dlg-text { font-size: .98rem; min-height: 2em; }
+  #dlg-choices { gap: 5px; margin-top: 6px; }
+  .choice { padding: 5px 10px; font-size: .9rem; }
+  .title-card h1 { font-size: 2.4rem; margin-bottom: .2em; }
+  #title-coq { width: 110px; margin-bottom: -6px; }
+  .title-screen { align-items: flex-start; overflow: auto; }
+  #toasts { top: 60px; }
+  #hint { top: auto; bottom: 120px; }
+}
+body.touch #btn-notebook { display: none; }

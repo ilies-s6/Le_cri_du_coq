@@ -99,7 +99,13 @@ CDC.ep('ep1').config = {
         '<div><kbd>E</kbd> Interagir / parler / passer</div>' +
         '<div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> ou clic : choisir une réponse</div>' +
         '<div><kbd>C</kbd> ou <kbd>Tab</kbd> Ouvrir le carnet d\'enquête</div>' +
-        '<div><kbd>Échap</kbd> Fermer · <kbd>M</kbd> Couper le son</div></div>' }
+        '<div><kbd>Échap</kbd> Fermer · <kbd>M</kbd> Couper le son</div></div>',
+      /* Version affichée sur téléphone / tablette */
+      touchHtml: '<div class="keys"><div>🕹️ <b>Joystick</b> (en bas à gauche) : se déplacer</div>' +
+        '<div><kbd>E</kbd> (en bas à droite) : parler, examiner, continuer</div>' +
+        '<div>👆 Touche une réponse pour la choisir, touche la bulle pour passer</div>' +
+        '<div>📖 Ouvrir le carnet d\'enquête</div>' +
+        '<div>📱 Conseil : tourne ton téléphone à l\'horizontale.</div></div>' }
   ],
 
   reveal: {

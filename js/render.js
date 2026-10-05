@@ -424,6 +424,8 @@
       this.dpr = dpr;
       // On veut voir environ 24 cases en largeur
       this.zoom = C.clamp(Math.min(w / (24 * T), h / (14 * T)), 0.8, 2.6);
+      // Petit écran (téléphone) : on zoome un peu plus pour que les personnages restent lisibles
+      if (Math.min(w, h) < 520) this.zoom = C.clamp(Math.min(w / (20 * T), h / (12 * T)), 0.9, 2);
       this.vw = w / this.zoom; this.vh = h / this.zoom;
     },
     follow: function (x, y, dt, instant) {

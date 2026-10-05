@@ -41,7 +41,12 @@
   });
   window.addEventListener('blur', function () { down = {}; });
 
+  var virt = { x: 0, y: 0 };   // joystick tactile (voir js/touch.js)
+
   C.Input = {
+    /* Utilisé par les commandes tactiles */
+    setVirtualAxis: function (x, y) { virt.x = x; virt.y = y; },
+    press: function (a) { pressed[a] = true; C.Audio.unlock(); },
     isDown: function (a) { return !!down[a]; },
     /* Vrai une seule fois par appui */
     consume: function (a) { if (pressed[a]) { pressed[a] = false; return true; } return false; },
@@ -50,6 +55,7 @@
       var x = (down.right ? 1 : 0) - (down.left ? 1 : 0);
       var y = (down.down ? 1 : 0) - (down.up ? 1 : 0);
       if (x && y) { x *= 0.7071; y *= 0.7071; }
+      if (!x && !y && (virt.x || virt.y)) return { x: virt.x, y: virt.y };
       return { x: x, y: y };
     }
   };

@@ -86,8 +86,9 @@
     var i = 0;
     function show() {
       var p = pages[i];
+      var body = (C.isTouch && C.isTouch() && p.touchHtml) ? p.touchHtml : p.html;
       C.UI.modal({
-        icon: p.icon, title: p.title, html: p.html + (replay && i === 0 ? '<p class="hint-soft">🔁 Nouvelle partie : certains indices, dialogues et objets ont changé de place.</p>' : ''),
+        icon: p.icon, title: p.title, html: body + (replay && i === 0 ? '<p class="hint-soft">🔁 Nouvelle partie : certains indices, dialogues et objets ont changé de place.</p>' : ''),
         cls: 'intro',
         buttons: [{ text: i < pages.length - 1 ? 'Suivant →' : 'Commencer l\'enquête', action: function () {
           i++;
@@ -153,6 +154,7 @@
 
       var z = C.World.zoneAt(C.Player.x, C.Player.y);
       if (z && z.id !== zoneId) { zoneId = z.id; C.UI.zoneBanner(z); }
+      document.body.classList.toggle('ui-busy', C.UI.busy() || C.Cutscene.active);
       C.Render.draw(ctx, t);
     }
     requestAnimationFrame(frame);

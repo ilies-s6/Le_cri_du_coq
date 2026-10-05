@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Le Cri du Coq — Le secret de l'agneau</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -39,6 +39,15 @@
     </div>
   </div>
 
+  <!-- Commandes tactiles (téléphone / tablette) -->
+  <div id="touch-controls">
+    <div id="joystick"><div class="joy-knob"></div></div>
+    <div class="touch-buttons">
+      <button id="touch-nb" class="touch-btn small" aria-label="Carnet">📖</button>
+      <button id="touch-e" class="touch-btn" aria-label="Interagir">E</button>
+    </div>
+  </div>
+
   <div id="fade"></div>
 
   <!-- Écran titre -->
@@ -59,7 +68,8 @@
         </div>
       </div>
       <div id="title-best" class="title-best"></div>
-      <div class="title-foot">Clavier : ZQSD / flèches · E pour interagir · C pour le carnet</div>
+      <div class="title-foot only-keys">Clavier : ZQSD / flèches · E pour interagir · C pour le carnet</div>
+      <div class="title-foot only-touch">Sur téléphone : joystick à gauche, bouton E pour interagir, 📖 pour le carnet. Tourne ton téléphone à l'horizontale pour mieux voir.</div>
     </div>
   </div>
 
@@ -99,6 +109,7 @@
   <script src="js/core.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/input.js"></script>
+  <script src="js/touch.js"></script>
   <script src="js/world.js"></script>
   <script src="js/sprites.js"></script>
   <script src="js/render.js"></script>

@@ -10,11 +10,13 @@
     right: ['KeyD', 'ArrowRight'],
     interact: ['KeyE', 'Enter', 'Space'],
     notebook: ['KeyC', 'Tab'],
+    phone: ['KeyP'],
+    time: ['KeyT'],
     back: ['Escape'],
     mute: ['KeyM']
   };
   // Les lettres tapées (e.key) servent de secours si le navigateur ne fournit pas e.code
-  var KEYS = { z: 'up', w: 'up', s: 'down', q: 'left', a: 'left', d: 'right', e: 'interact', c: 'notebook', m: 'mute' };
+  var KEYS = { z: 'up', w: 'up', s: 'down', q: 'left', a: 'left', d: 'right', e: 'interact', c: 'notebook', m: 'mute', p: 'phone', t: 'time' };
 
   function actionOf(e) {
     for (var a in MAP) if (MAP[a].indexOf(e.code) >= 0) return a;
@@ -27,7 +29,7 @@
     if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     var a = actionOf(e);
     if (!a) {
-      if (/^Digit[1-4]$/.test(e.code)) { pressed['choice' + e.code.slice(5)] = true; }
+      if (/^(Digit|Numpad)[1-5]$/.test(e.code)) { pressed['choice' + e.code.slice(-1)] = true; }
       return;
     }
     if (a !== 'back') e.preventDefault();

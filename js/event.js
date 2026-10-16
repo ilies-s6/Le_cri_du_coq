@@ -52,7 +52,7 @@
       var box = C.UI.$('event-card');
       box.innerHTML = '';
       var head = E('div', 'ev-head');
-      head.appendChild(E('h2', '', '🎪 Organiser une activité'));
+      head.appendChild(E('h2', '', ev.title || '🎪 Organiser une activité'));
       var x = E('button', 'icon-btn', '✕'); x.addEventListener('click', function () { self.close(); });
       head.appendChild(x);
       box.appendChild(head);
@@ -81,8 +81,8 @@
         var cv = document.createElement('canvas'); cv.width = 64; cv.height = 64;
         C.Sprites.portrait(cv, ch);
         b.appendChild(cv);
-        b.appendChild(E('span', '', ch.emoji + ' ' + ch.name));
-        b.appendChild(E('em', '', plan.invited[id] ? 'Invité' : 'Pas invité'));
+        b.appendChild(E('span', '', ch.short || ch.name));
+        b.appendChild(E('em', '', plan.invited[id] ? 'Invité·e' : 'Pas invité·e'));
         b.addEventListener('click', function () { plan.invited[id] = !plan.invited[id]; C.Audio.play('select'); self.render(); });
         parts.appendChild(b);
       });
@@ -96,7 +96,7 @@
         if (!plan.invited[id]) return;
         var ch = ep.charactersById[id];
         var row = E('div', 'ev-role-row');
-        row.appendChild(E('span', 'ev-role-name', ch.emoji + ' ' + ch.name));
+        row.appendChild(E('span', 'ev-role-name', ch.short || ch.name));
         var sel = document.createElement('select');
         ev.roles.forEach(function (r) {
           var o = document.createElement('option'); o.value = r.id; o.textContent = r.label;
@@ -114,7 +114,7 @@
         }
         roles.appendChild(row);
       });
-      if (!roles.children.length) roles.appendChild(E('p', 'ev-note', 'Invite au moins un animal.'));
+      if (!roles.children.length) roles.appendChild(E('p', 'ev-note', 'Invite au moins une personne.'));
       main.appendChild(roles);
       main.appendChild(E('div', 'ev-role-help', ''));
 
@@ -122,7 +122,7 @@
       side.appendChild(E('h3', '', '📝 Ce que tu as appris'));
       var adv = (ev.advice || []).filter(function (a) { return C.check(a.if); });
       var ul = E('ul', 'ev-advice');
-      adv.forEach(function (a) { ul.appendChild(E('li', '', '<b>' + ep.charactersById[a.who].emoji + '</b> ' + a.text)); });
+      adv.forEach(function (a) { ul.appendChild(E('li', '', '<b>' + (ep.charactersById[a.who].short || ep.charactersById[a.who].name) + '</b> ' + a.text)); });
       side.appendChild(ul);
 
       cols.appendChild(main); cols.appendChild(side);
@@ -259,11 +259,11 @@
       var victim = ep.charactersById[cfg.solution.victime];
       var box = C.UI.$('end-card');
       box.innerHTML = '';
-      box.appendChild(E('div', 'end-kicker', '🐓 ENQUÊTE TERMINÉE'));
+      box.appendChild(E('div', 'end-kicker', '🐓 Fin de l\'épisode'));
       box.appendChild(E('h1', '', cfg.title));
       var tbl = E('div', 'end-table');
       function row(k, v) { tbl.appendChild(E('div', 'end-k', k)); tbl.appendChild(E('div', 'end-v', v)); }
-      row('Victime identifiée', victim.emoji + ' ' + victim.name);
+      row('Élève isolé identifié', victim.name);
       row('Indices trouvés', S.vars.clues_found + ' / ' + ep.clues.length);
       row('Enquête', stars((sc.enquete + sc.comprehension) / 60 * 5));
       row('Réintégration', stars(sc.reintegration / 20 * 5));
@@ -292,6 +292,13 @@
         notes.forEach(function (n) { ul.appendChild(E('li', '', n.text)); });
         box.appendChild(ul);
       }
+      var cons = (end.consequences || []).filter(function (n) { return C.check(n.if); });
+      if (cons.length) {
+        var cbox = E('div', 'end-cons');
+        cbox.appendChild(E('h3', '', 'Ce que tes choix ont changé'));
+        cons.forEach(function (n) { cbox.appendChild(E('div', 'end-con ' + (n.tone || ''), n.text)); });
+        box.appendChild(cbox);
+      }
       var lessons = E('div', 'end-lessons');
       lessons.appendChild(E('h3', '', 'À retenir'));
       var ll = E('ul', '');
@@ -303,7 +310,7 @@
       var btns = E('div', 'end-buttons');
       var nb = E('button', 'btn btn-ghost', '📖 Revoir mon carnet');
       nb.addEventListener('click', function () { C.Notebook.open('indices'); });
-      var rp = E('button', 'btn btn-solve', '🔁 Rejouer une nouvelle partie');
+      var rp = E('button', 'btn btn-solve', '🔁 Rejouer (nouvelle partie)');
       rp.addEventListener('click', function () { C.restart(); });
       btns.appendChild(nb); btns.appendChild(rp);
       box.appendChild(btns);

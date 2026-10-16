@@ -29,7 +29,7 @@
       var total = cfg.roles.length + 1;
       var dots = E('div', 'ded-dots');
       for (var i = 0; i < total; i++) dots.appendChild(E('span', i === step ? 'on' : (i < step ? 'done' : '')));
-      box.appendChild(E('div', 'ded-kicker', '🔎 Résoudre l\'enquête'));
+      box.appendChild(E('div', 'ded-kicker', '🔎 Tirer mes conclusions'));
       box.appendChild(dots);
 
       var self = this;
@@ -43,7 +43,7 @@
           var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
           C.Sprites.portrait(cv, ch, { unknown: !S.met[id] });
           b.appendChild(cv);
-          b.appendChild(E('span', '', S.met[id] ? ch.emoji + ' ' + ch.name : '???'));
+          b.appendChild(E('span', '', S.met[id] ? ch.name : '???'));
           if (!S.met[id]) b.disabled = true;
           b.addEventListener('click', function () { answers[r.key] = id; C.Audio.play('select'); self.render(); });
           opts.appendChild(b);
@@ -162,7 +162,7 @@
           var cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
           C.Sprites.portrait(cv, ch);
           card.appendChild(cv);
-          card.appendChild(E('div', 'rv-role-name', ch.emoji + ' ' + ch.name));
+          card.appendChild(E('div', 'rv-role-name', ch.name));
           card.appendChild(E('div', 'rv-role-label', r.label));
           card.appendChild(E('div', 'rv-role-text', R.roleText[r.key]));
           var ev = evidence(r.key, id).slice(0, 2).map(function (cid) { return C.EP.cluesById[cid].title; });
@@ -188,7 +188,7 @@
         });
         box.appendChild(tl);
         box.appendChild(E('p', 'rv-lesson', R.lesson));
-        var b = E('button', 'btn btn-solve', 'Passer à l\'action : aider l\'agneau →');
+        var b = E('button', 'btn btn-solve', R.actionButton || 'Passer à l\'action →');
         b.addEventListener('click', function () { C.UI.close('reveal'); self.finish(); });
         box.appendChild(b);
       }
@@ -196,11 +196,14 @@
       thoughts();
     },
     finish: function () {
+      var R = C.EP.config.reveal;
       C.setPhase('reintegration');
-      C.UI.modal({
-        icon: '🤝', title: 'Deuxième objectif : réintégrer l\'agneau',
-        html: C.EP.config.reveal.next,
-        buttons: [{ text: 'C\'est parti !' }]
+      C.Time.jumpTo(R.jumpTo, function () {
+        C.UI.modal({
+          icon: '🤝', title: R.nextTitle || 'Deuxième objectif',
+          html: R.next,
+          buttons: [{ text: 'C\'est parti' }]
+        });
       });
     }
   };

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Le Cri du Coq — Le secret de l'agneau</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,28 +14,37 @@
   <!-- HUD -->
   <div id="hud">
     <div class="hud-left">
-      <div id="hud-zone" class="hud-pill">🏡 La Ferme des Plumes</div>
+      <div class="hud-time" id="hud-time" title="Moment de la journée">
+        <span id="hud-day">Lundi</span><b id="hud-clock">8 h 05</b><span id="hud-moment"></span>
+      </div>
+      <div id="hud-zone" class="hud-zone">Collège des Plumes</div>
       <div id="hud-objective" class="hud-objective"></div>
     </div>
     <div class="hud-right">
-      <div id="hud-clue-box" class="hud-pill clue-count">🔍 <span id="hud-clues">0</span></div>
-      <button id="btn-notebook" class="hud-btn" title="Carnet d'enquête (C)">📖 Carnet <kbd>C</kbd></button>
-      <button id="btn-mute" class="hud-btn small" title="Son (M)">🔊</button>
+      <div id="hud-clue-box" class="hud-chip" title="Indices découverts">🔍 <span id="hud-clues">0</span></div>
+      <button id="btn-notebook" class="hud-btn" title="Carnet d'enquête (C)">📖<span>Carnet</span><kbd>C</kbd></button>
+      <button id="btn-phone" class="hud-btn" title="Téléphone (P)">📱<span>Téléphone</span><kbd>P</kbd><i id="ph-badge" class="badge hidden">0</i></button>
+      <button id="btn-time" class="hud-btn" title="Passer au moment suivant (T)">⏰<span>Suite</span><kbd>T</kbd></button>
+      <button id="btn-menu" class="hud-btn icon" title="Pause (Échap)">⏸</button>
     </div>
+  </div>
+  <div id="keybar" class="only-keys">
+    <span><kbd>ZQSD</kbd> bouger</span><span><kbd>E</kbd> interagir</span><span><kbd>C</kbd> carnet</span><span><kbd>P</kbd> téléphone</span><span><kbd>T</kbd> suite</span><span><kbd>Échap</kbd> pause</span>
   </div>
   <div id="zone-banner"></div>
   <div id="banner-activity"></div>
   <div id="hint" class="hidden"></div>
   <div id="toasts"></div>
+  <div id="coach" class="hidden"></div>
 
   <!-- Boîte de dialogue -->
   <div id="dialogue" class="hidden">
-    <canvas id="dlg-portrait" width="112" height="112"></canvas>
+    <canvas id="dlg-portrait" width="140" height="140"></canvas>
     <div class="dlg-main">
       <div id="dlg-name"></div>
       <div id="dlg-text"></div>
       <div id="dlg-choices"></div>
-      <div id="dlg-next">▼ <kbd>E</kbd></div>
+      <div id="dlg-next">Continuer <kbd>E</kbd></div>
     </div>
   </div>
 
@@ -49,27 +58,25 @@
   </div>
 
   <div id="fade"></div>
+  <div id="time-card" class="hidden"></div>
 
-  <!-- Écran titre -->
+  <!-- Menu principal -->
   <div id="title" class="overlay title-screen">
-    <div class="title-card">
-      <canvas id="title-coq" width="240" height="220"></canvas>
-      <div class="title-kicker">Un jeu d'enquête à la Ferme des Plumes</div>
-      <h1>LE CRI DU COQ</h1>
-      <div class="episodes">
-        <div class="episode active">
-          <div class="ep-num">Épisode 1</div>
-          <div class="ep-name">Le secret de l'agneau</div>
-          <button id="btn-play" class="btn btn-solve big">▶ Jouer</button>
+    <div class="title-wrap">
+      <div class="title-card">
+        <div class="title-kicker">Collège des Plumes · Jeu d'enquête</div>
+        <h1>Le Cri <span>du</span> Coq</h1>
+        <div class="title-ep"><b>Épisode 1</b> — Le secret de l'agneau</div>
+        <div class="menu">
+          <button id="btn-resume" class="menu-btn primary hidden">▶ Reprendre la partie<small id="resume-info"></small></button>
+          <button id="btn-play" class="menu-btn">✦ Nouvelle partie</button>
+          <button id="btn-howto" class="menu-btn ghost">🎮 Commandes</button>
+          <button id="btn-about" class="menu-btn ghost">ℹ️ À propos</button>
         </div>
-        <div class="episode locked">
-          <div class="ep-num">Épisode 2</div>
-          <div class="ep-name">Bientôt...</div>
-        </div>
+        <div id="title-best" class="title-best"></div>
+        <div class="episodes-next">Épisode 2 · bientôt</div>
       </div>
-      <div id="title-best" class="title-best"></div>
-      <div class="title-foot only-keys">Clavier : ZQSD / flèches · E pour interagir · C pour le carnet</div>
-      <div class="title-foot only-touch">Sur téléphone : joystick à gauche, bouton E pour interagir, 📖 pour le carnet. Tourne ton téléphone à l'horizontale pour mieux voir.</div>
+      <canvas id="title-cast" width="760" height="300"></canvas>
     </div>
   </div>
 
@@ -85,17 +92,31 @@
   <!-- Déduction -->
   <div id="deduction" class="overlay hidden"><div id="ded-card" class="panel ded-card"></div></div>
 
+  <!-- Téléphone -->
+  <div id="phone" class="overlay hidden">
+    <div class="ph-wrap">
+      <div class="ph-device">
+        <div id="ph-status" class="ph-status"></div>
+        <div id="ph-screen" class="ph-screen"></div>
+        <div class="ph-homebar"></div>
+      </div>
+      <div id="ph-side" class="ph-side"></div>
+    </div>
+  </div>
+
   <!-- Carnet d'enquête -->
   <div id="notebook" class="overlay hidden">
     <div class="nb-book">
       <div class="nb-head">
-        <h2>📖 CARNET D'ENQUÊTE</h2>
+        <h2>📖 Carnet d'enquête</h2>
         <button id="nb-close" class="icon-btn" title="Fermer (Échap)">✕</button>
       </div>
       <div id="nb-objective" class="nb-objective"></div>
       <div class="nb-tabs">
-        <button class="nb-tab active" data-tab="persos">Personnages</button>
+        <button class="nb-tab active" data-tab="persos">Élèves</button>
         <button class="nb-tab" data-tab="indices">Indices</button>
+        <button class="nb-tab" data-tab="temoins">Témoignages</button>
+        <button class="nb-tab" data-tab="liens">Relations</button>
         <button class="nb-tab" data-tab="hyp">Hypothèses</button>
       </div>
       <div id="nb-body" class="nb-body"></div>
@@ -115,8 +136,13 @@
   <script src="js/render.js"></script>
   <script src="js/entities.js"></script>
   <script src="js/scenes.js"></script>
+  <script src="js/ambient.js"></script>
+  <script src="js/time.js"></script>
+  <script src="js/save.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/dialogue.js"></script>
+  <script src="js/phone.js"></script>
+  <script src="js/tutorial.js"></script>
   <script src="js/notebook.js"></script>
   <script src="js/deduction.js"></script>
   <script src="js/event.js"></script>
@@ -129,6 +155,8 @@
   <script src="episodes/ep1/dialogues.js"></script>
   <script src="episodes/ep1/objects.js"></script>
   <script src="episodes/ep1/scenes.js"></script>
+  <script src="episodes/ep1/ambient.js"></script>
+  <script src="episodes/ep1/phone.js"></script>
   <script src="episodes/ep1/event.js"></script>
 
   <script src="js/main.js"></script>

@@ -70,9 +70,19 @@ window.CDC = window.CDC || {};
       hyp: {},            // hypothèses du carnet
       variant: {},
       time: 0,
+      slot: 0,            // moment de la journée (index dans config.timeline)
+      slotTime: 0,        // temps passé dans ce moment
+      clueSlot: {},       // indice -> moment où il a été trouvé
+      rel: {},            // relations entre personnages ('a|b' -> valeur)
+      testi: [],          // témoignages notés
+      phone: { seen: {}, acts: {}, replies: {}, caps: {}, notified: {} },
       deduction: null,
       event: null
     };
+    // Relations de départ entre les personnages
+    (ep.config.relations || []).forEach(function (r) { S.rel[C.relKey(r.a, r.b)] = r.v || 0; });
+    // Personnages déjà connus (même classe)
+    C.arr(ep.config.knownAtStart).forEach(function (id) { S.met[id] = true; });
     // Tirage des variantes de cette partie (rejouabilité)
     var vs = ep.config.variants || {};
     Object.keys(vs).forEach(function (k) {
@@ -132,6 +142,28 @@ window.CDC = window.CDC || {};
           if (C.check(v)) return false; break;
         case 'time':
           if (S.time < v) return false; break;
+        case 'slotTime':
+          if (S.slotTime < v) return false; break;
+        case 'day':
+          if (C.arr(v).indexOf(C.Time.cur().day) < 0) return false; break;
+        case 'moment':
+          if (C.arr(v).indexOf(C.Time.cur().moment) < 0) return false; break;
+        case 'slot':
+          if (C.arr(v).indexOf(C.Time.cur().id) < 0) return false; break;
+        case 'minSlot':
+          if (S.slot < C.Time.index(v)) return false; break;
+        case 'maxSlot':
+          if (S.slot > C.Time.index(v)) return false; break;
+        case 'minRel':
+          for (var r1 in v) if ((S.rel[C.relKey.apply(null, r1.split('|'))] || 0) < v[r1]) return false; break;
+        case 'maxRel':
+          for (var r2 in v) if ((S.rel[C.relKey.apply(null, r2.split('|'))] || 0) > v[r2]) return false; break;
+        case 'reply':      // réponse choisie dans le téléphone : { r_id: index }
+          for (var rp in v) if (C.arr(v[rp]).indexOf(S.phone.replies[rp]) < 0) return false; break;
+        case 'act':        // action faite sur un message : 'msg:action'
+          list = C.arr(v); for (i = 0; i < list.length; i++) if (!S.phone.acts[list[i]]) return false; break;
+        case 'notAct':
+          list = C.arr(v); for (i = 0; i < list.length; i++) if (S.phone.acts[list[i]]) return false; break;
       }
     }
     return true;
@@ -149,6 +181,19 @@ window.CDC = window.CDC || {};
     C.arr(e.unflag).forEach(function (f) { delete S.flags[f]; });
     C.arr(e.met).forEach(function (m) { S.met[m] = true; });
     C.arr(e.clue).concat(C.arr(e.clues)).forEach(function (id) { C.giveClue(id); });
+    if (e.rel) for (var rk in e.rel) {
+      var key = C.relKey.apply(null, rk.split('|'));
+      S.rel[key] = C.clamp((S.rel[key] || 0) + e.rel[rk], -3, 3);
+    }
+    if (e.testi) C.arr(e.testi).forEach(function (t) {
+      if (S.testi.some(function (x) { return x.id === t.id; })) return;
+      S.testi.push({ id: t.id, who: t.who, text: t.text, slot: S.slot });
+    });
+    if (e.mood && C.NPC) for (var mid in e.mood) C.NPC.setMood(mid, e.mood[mid], e.moodFor || 10);
+    if (e.walk && C.NPC) for (var wid in e.walk) C.NPC.walkTo(wid, e.walk[wid], e.walkSpeed);
+    if (e.say && C.NPC) C.arr(e.say).forEach(function (l, i) {
+      setTimeout(function () { if (l[0] === 'coq') C.Player.say(l[1], 2.6); else C.NPC.say(l[0], l[1], 2.8, l[2]); }, i * 1100);
+    });
     if (e.toast) C.UI.toast(e.toast);
     if (e.phase) C.setPhase(e.phase);
     if (e.open) C.pendingOpen = e.open;   // ouvre un écran (carnet, activité...) à la fin du dialogue
@@ -161,6 +206,7 @@ window.CDC = window.CDC || {};
     var clue = ep.cluesById[id];
     if (!clue) { console.warn('Indice inconnu : ' + id); return false; }
     S.clueOrder.push(id);
+    S.clueSlot[id] = S.slot;
     S.clues[id] = S.clueOrder.length;
     S.vars.clues_found = S.clueOrder.length;
     if (clue.onFound) C.apply(clue.onFound);
@@ -173,6 +219,9 @@ window.CDC = window.CDC || {};
     if (C.onClueFound) C.onClueFound(clue);
     return true;
   };
+
+  C.relKey = function (a, b) { return a < b ? a + '|' + b : b + '|' + a; };
+  C.rel = function (a, b) { return C.S.rel[C.relKey(a, b)] || 0; };
 
   C.charName = function (id) {
     if (id === 'narr') return '';

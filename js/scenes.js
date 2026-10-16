@@ -11,11 +11,17 @@
     reset: function () {
       this.armed = null; this.playing = false; this.cooldown = {}; this.done = {}; this.tick = 0;
     },
+    /* Changement de moment : toute scène en préparation est annulée */
+    releaseAll: function () {
+      if (this.armed) this.release(this.armed, 0);
+      C.UI.setHint(null);
+    },
+    isDone: function (sc) { return this.done[sc.id] || C.S.flags[sc.id + '_done']; },
 
     actorsOf: function (sc) { return Object.keys(sc.actors || {}); },
 
     arm: function (sc) {
-      this.armed = sc; this.playing = false; this.armedAt = C.S.time;
+      this.armed = sc; this.playing = false; this.armedAt = C.S.time; this.heard = false;
       this.actorsOf(sc).forEach(function (id) {
         var n = C.NPC.byId[id];
         n.reserved = true; n.target = null;
@@ -55,7 +61,7 @@
 
     update: function (dt) {
       var S = C.S, P = C.Player, self = this;
-      if (C.UI.busy() || C.Cutscene.active) return;
+      if (C.UI.busy() || C.Cutscene.active || C.Time.isGoing()) return;
       var list = C.EP.scenes || [];
 
       if (!this.armed) {
@@ -64,9 +70,9 @@
         this.tick = 0.5;
         for (var i = 0; i < list.length; i++) {
           var sc = list[i];
-          if (this.done[sc.id] || (this.cooldown[sc.id] || 0) > S.time) continue;
+          if (this.isDone(sc) || (this.cooldown[sc.id] || 0) > S.time) continue;
           if (!C.check(sc.if)) continue;
-          var busy = this.actorsOf(sc).some(function (id) { return C.NPC.byId[id].talking; });
+          var busy = this.actorsOf(sc).some(function (id) { return C.NPC.byId[id].talking || C.NPC.byId[id].path; });
           if (busy) continue;
           this.arm(sc);
           break;
@@ -94,7 +100,8 @@
       }
 
       // Lecture en cours
-      if (sc2.interrupt && this.nearestActor(sc2) < sc2.interrupt * T) { this.interrupt(sc2); return; }
+      // (une fois l'essentiel entendu, s'approcher ne coupe plus la scène)
+      if (sc2.interrupt && !this.heard && this.nearestActor(sc2) < sc2.interrupt * T) { this.interrupt(sc2); return; }
       if (dP > sc2.radius * T * 1.7) { this.release(sc2, 6); C.UI.toast('La conversation continue sans toi... Reviens plus tard.'); return; }
       this.timer -= dt;
       var st = sc2.steps[this.step];
@@ -131,6 +138,7 @@
         return;
       }
       var st = sc.steps[this.step];
+      if (st.mood) C.NPC.setMood(st.say || st.who, st.mood, 6);
       if (st.say) {
         var txt = C.text(st.text);
         if (st.say === 'coq') P.say(txt, st.t || 2.5, st.style); else C.NPC.say(st.say, txt, st.t || (1.2 + txt.length * 0.042), st.style);
@@ -150,6 +158,7 @@
         var cx = sc.center[0] * T, cy = sc.center[1] * T;
         if (dist(P.x, P.y, cx, cy) <= sc.radius * T * 1.2) {
           C.giveClue(st.clue);
+          this.heard = true;
         }
         this.timer = 0.2;
       } else if (st.do) {

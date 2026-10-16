@@ -32,6 +32,10 @@
     select: function () { tone(700, 0, 0.06, 'triangle', 0.05); },
     wrong: function () { tone(330, 0, 0.18, 'sine', 0.06); tone(262, 0.12, 0.25, 'sine', 0.05); },
     reveal: function () { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.14, 0.5, 'triangle', 0.06); }); },
+    bell: function () { [988, 784, 988, 784].forEach(function (f, i) { tone(f, i * 0.16, 0.22, 'triangle', 0.04); }); },
+    buzz: function () { tone(180, 0, 0.12, 'square', 0.025); tone(180, 0.18, 0.12, 'square', 0.025); },
+    msg: function () { tone(880, 0, 0.07, 'sine', 0.05); tone(1175, 0.07, 0.1, 'sine', 0.045); },
+    send: function () { tone(660, 0, 0.06, 'sine', 0.04); tone(990, 0.04, 0.08, 'sine', 0.04); },
     rooster: function () { tone(700, 0, 0.12, 'sawtooth', 0.03); tone(900, 0.12, 0.12, 'sawtooth', 0.03); tone(1100, 0.24, 0.35, 'sawtooth', 0.03); }
   };
 

@@ -75,10 +75,15 @@
       var ch = C.EP.charactersById[who];
       var isNarr = who === 'narr';
       el.box.classList.toggle('narr', isNarr);
-      el.name.textContent = isNarr ? 'Pensée du Coq' : (ch ? (ch.emoji + ' ' + ch.name) : '');
-      var pch = isNarr ? C.EP.charactersById[C.EP.config.player] : ch;
-      if (pch) { C.Sprites.portrait(el.portrait, pch); el.portrait.style.visibility = 'visible'; }
+      var pl = C.EP.charactersById[C.EP.config.player];
+      el.name.textContent = isNarr ? (node.label || 'Dans ta tête') : (ch ? (ch.name + (ch.role ? ' · ' + ch.role : '')) : '');
+      el.name.style.background = (!isNarr && ch && ch.colors.tag) || '';
+      var pch = isNarr ? pl : ch;
+      var mood = node.mood || (isNarr ? (node.pmood || 'neutral') : (ch && !ch.player ? C.NPC.moodOf(who) : (C.Player.mood || 'neutral')));
+      if (node.mood && ch && !ch.player) C.NPC.setMood(who, node.mood, 8);
+      if (pch) { C.Sprites.portrait(el.portrait, pch, { mood: mood }); el.portrait.style.visibility = 'visible'; }
       else el.portrait.style.visibility = 'hidden';
+      el.box.dataset.mood = mood;
       if (ch && !isNarr && who !== C.EP.config.player) C.S.met[who] = true;
       cur.full = C.fmt(C.text(node.text));
       cur.shown = 0; cur.typing = true;
@@ -107,7 +112,7 @@
       if (cur.choices.length) {
         if (I.consume('up')) { cur.sel = (cur.sel + cur.choices.length - 1) % cur.choices.length; this.renderChoices(); }
         if (I.consume('down')) { cur.sel = (cur.sel + 1) % cur.choices.length; this.renderChoices(); }
-        for (var k = 1; k <= 4; k++) if (I.consume('choice' + k) && cur.choices[k - 1]) { this.choose(k - 1); return; }
+        for (var k = 1; k <= 5; k++) if (I.consume('choice' + k) && cur.choices[k - 1]) { this.choose(k - 1); return; }
         if (I.consume('interact')) this.choose(cur.sel);
       } else if (I.consume('interact')) this.advance();
       if (I.consume('back') && !cur.choices.length) this.advance();
@@ -126,8 +131,10 @@
       cur.choices.forEach(function (c, i) {
         var b = document.createElement('button');
         b.className = 'choice' + (i === cur.sel ? ' sel' : '');
-        b.innerHTML = '<span class="key">' + String.fromCharCode(65 + i) + '</span>';
-        b.appendChild(document.createTextNode('« ' + C.fmt(C.text(c.text)) + ' »'));
+        b.innerHTML = '<span class="key">' + (i + 1) + '</span>';
+        var label = C.fmt(C.text(c.text));
+        if (c.act) { b.classList.add('act'); b.appendChild(C.UI.el('span', 'choice-act', c.act)); }
+        b.appendChild(document.createTextNode(c.raw || c.act ? label : '« ' + label + ' »'));
         b.addEventListener('click', function (e) { e.stopPropagation(); self.choose(i); });
         b.addEventListener('mouseenter', function () { cur.sel = i; el.choices.querySelectorAll('.choice').forEach(function (x, j) { x.classList.toggle('sel', j === i); }); });
         el.choices.appendChild(b);
@@ -140,6 +147,7 @@
       C.Audio.play('select');
       C.apply(c.do);
       if (c.next) this.show(c.next); else this.end();
+      if (C.Tutorial) C.Tutorial.event('choice');
     },
 
     advance: function () {
@@ -162,6 +170,8 @@
       C.apply(after);
       C.Audio.play('close');
       if (C.onStateChange) C.onStateChange();
+      if (C.Tutorial) C.Tutorial.event('talk');
+      if (C.Save) C.Save.soon();
     }
   };
 })(window.CDC);
